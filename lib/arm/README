@@ -1,0 +1,11 @@
+Cross-compile libssl for ARM:
+=============================
+
+1) Clone openssl git repository: 
+    # git clone git://git.openssl.org/openssl.git
+
+2) Configure openssl for ARM:
+    # ./Configure linux-generic32 shared -DL_ENDIAN
+
+3) Compile for ARM:
+    # make CC=arm-linux-gnueabihf-gcc RANLIB=arm-linux-gnueabihf-ranlib LD=arm-linux-gnueabihf-ld MAKEDEPPROG=arm-linux-gnueabihf-gcc PROCESSOR=ARM 

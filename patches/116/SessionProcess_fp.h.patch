@@ -1,0 +1,13 @@
+diff --git a/tpm/include/prototypes/SessionProcess_fp.h b/tpm/include/prototypes/SessionProcess_fp.h
+index 100644
+--- a/tpm/include/prototypes/SessionProcess_fp.h
++++ b/tpm/include/prototypes/SessionProcess_fp.h
+@@ -39,4 +39,8 @@
+     UINT32          *resSessionSize // OUT: response session area
+     );
+ 
++void
++SessionRemoveAssociationToHandle(
++    TPM_HANDLE           handle
++    );
+ #endif  // _SESSIONPROCESS_FP_H_

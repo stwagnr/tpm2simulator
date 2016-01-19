@@ -1,0 +1,134 @@
+diff --git a/documents/TPM2 rev 116 published/TPM Rev 2.0 Part 2 - Structures 01.16.txt b/documents/TPM2 rev 116 published/TPM Rev 2.0 Part 2 - Structures 01.16.txt
+index 5c9e95e..19dbcba 100644
+--- a/documents/TPM2 rev 116 published/TPM Rev 2.0 Part 2 - Structures 01.16.txt	
++++ b/documents/TPM2 rev 116 published/TPM Rev 2.0 Part 2 - Structures 01.16.txt	
+@@ -3262,7 +3262,7 @@ For all other columns, the command and response tables in TPM 2.0 Part 3 are def
+ 
+        Table 13 -- Definition of (UINT32) TPM_CC Constants (Numeric Order) <IN/OUT, S>
+ 
+-                                 Command     NV Write  Physical  Presence     Decrypt     Encrypt
++                                 Command     NV Write  Physical Presence   Decrypt     Encrypt
+ 
+ Name                             Code                                                              Comments
+ 
+@@ -3329,7 +3329,7 @@ Page 30                          TCG Published
+ October 30, 2014                 Copyright © TCG 2006-2014                                                  Level 00   Revision 01.16
+ Part 2: Structures                                                                                   Trusted Platform Module Library
+ 
+-                                   Command     NV Write  Physical  Presence     Decrypt     Encrypt
++                                   Command     NV Write  Physical Presence   Decrypt     Encrypt
+ 
+ Name                               Code                                                              Comments
+ 
+@@ -3404,7 +3404,7 @@ Family "2.0"                       TCG Published
+ Level 00 Revision 01.16            Copyright © TCG 2006-2014                                                   October 30, 2014
+ Trusted Platform Module Library                                                                                    Part 2: Structures
+ 
+-                                 Command     NV Write  Physical  Presence     Decrypt     Encrypt
++                                 Command     NV Write  Physical Presence   Decrypt     Encrypt
+ 
+ Name                             Code                                                              Comments
+ 
+@@ -3479,9 +3479,9 @@ Page 32                          TCG Published
+ October 30, 2014                 Copyright © TCG 2006-2014                                                  Level  00 Revision 01.16
+ Part 2: Structures                                                                                                 Trusted Platform Module Library
+ 
+-                                 Command                     NV Write  Physical  Presence     Decrypt     Encrypt
++                                            Command     NV Write  Physical Presence        Decrypt     Encrypt
+ 
+-Name                             Code                                                                              Comments
++Name                                        Code                                                                   Comments
+ 
+ TPM_CC_PCR_Read                             0x0000017E                                                             PCR
+ 
+@@ -3766,15 +3766,15 @@ NOTE               The constant RC_VER1 is used to indicate that the V attribute
+ 
+                   Table  17  --  Definition of (UINT32) TPM_RC Constants (Actions)               <OUT>
+ 
+-Name                                          Value           Description
++Name                                          Value            Description
+ 
+ TPM_RC_SUCCESS                                0x000
+ 
+-TPM_RC_BAD_TAG                                0x01E           defined for compatibility with     TPM 1.2
++TPM_RC_BAD_TAG                                0x01E            defined for compatibility with     TPM 1.2
+ 
+-RC_VER1                                       0x100           set for all format 0 response      codes
++RC_VER1                                       0x100            set for all format 0 response      codes
+ 
+-TPM_RC_INITIALIZE                        RC_VER1 + 0x000      TPM not initialized
++TPM_RC_INITIALIZE                             RC_VER1 + 0x000  TPM not initialized
+ 
+ Page 36                                          TCG Published                                              Family "2.0"
+ 
+@@ -4049,13 +4049,13 @@ TPM_RC_SESSION_HANDLES   RC_WARN + 0x005  out of session handles ≠ a session m
+ 
+                                           before a new session may be created
+ 
+-                                          out  of  object      handles   ≠  the   handle       space  for
++TPM_RC_OBJECT_HANDLES    RC_WARN + 0x006  out  of  object      handles   ≠  the   handle       space  for
+ 
+                                           objects is depleted and a reboot is required
+ 
+                                           NOTE          This    cannot   occur    on      the  reference
+ 
+-TPM_RC_OBJECT_HANDLES    RC_WARN + 0x006                implementation.
++                                                        implementation.
+ 
+                                           NOTE      There is no reason why an implementation
+ 
+@@ -4600,7 +4600,7 @@ TPM_CAP_ECC_CURVES               0x00000008       TPM_ECC_CURVE(1)       TPML_EC
+ 
+ TPM_CAP_LAST                     0x00000008
+ 
+-TPM_CAP_VENDOR_PROPERTY 0x00000100                manufacturer specific  manufacturer-specific values
++TPM_CAP_VENDOR_PROPERTY          0x00000100       manufacturer specific  manufacturer-specific values
+ 
+ #TPM_RC_VALUE
+ 
+@@ -4798,8 +4798,6 @@ TPM_PT_CONTEXT_GAP_MAX           PT_FIXED  +  20  the maximum allowed difference
+ 
+                                                   This value shall be at least 216-1 (65535).
+ 
+-                                 PT_FIXED  +  21  skipped
+-
+ TPM_PT_NV_COUNTERS_MAX           PT_FIXED  +  22  the maximum number of NV Indexes that are allowed to
+ 
+                                                   have the TPMA_NV_COUNTER attribute SET
+@@ -10183,12 +10181,14 @@ scheme              TPMT_ECC_SCHEME+                    If the sign attribute of
+ 
+                                                         If  the  key     is  a  Storage    Key,      then  this   field  shall       be
+ 
++                                                        TPM_ALG_NULL.
++
+ Family "2.0"                                 TCG Published                                                               Page 131
+ 
+ Level 00 Revision 01.16                  Copyright © TCG 2006-2014                                         October 30, 2014
+ Trusted Platform Module Library                                                                                  Part 2: Structures
+ 
+-                                        TPM_ALG_NULL.
++Parameter         Type                  Description
+ 
+ curveID           TPMI_ECC_CURVE        ECC curve ID
+ 
+@@ -10728,7 +10728,7 @@ Bit   Name                                 Description
+ 
+                                            Platform Authorization.
+ 
+-1     TPMA_NV_OWNERWRITE                   SET   (1):  The   Index    data  can  be   written  if  Owner      Authorization is
++1     TPMA_NV_OWNERWRITE                   SET  (1):  The   Index    data  can  be   written  if  Owner      Authorization is
+ 
+                                            provided.
+ 
+@@ -10861,9 +10861,9 @@ Bit      Name                   Description
+ 
+                                 Index authPolicy.
+ 
+-24:2     Reserved               shall be zero
++24:20    Reserved               shall be zero
+ 
+-0                               reserved for use in defining additional read controls
++                                reserved for use in defining additional read controls
+ 
+ 25       TPMA_NV_NO_DA          SET (1): Authorization failures of the Index do not affect the DA logic
+ 

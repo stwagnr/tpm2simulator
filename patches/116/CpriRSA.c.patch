@@ -1,0 +1,22 @@
+diff --git a/OsslCryptoEngine/CpriRSA.c b/OsslCryptoEngine/CpriRSA.c
+index 91d3042..9edf589 100644
+--- a/OsslCryptoEngine/CpriRSA.c
++++ b/OsslCryptoEngine/CpriRSA.c
+@@ -811,7 +811,7 @@ RSASSA_Encode(
+     )
+ {
+     BYTE            *der;
+-    INT32            derSize = _cpri__GetHashDER(hashAlg, &der);
++    INT32            derSize = _cpri__GetHashDER(hashAlg, (const BYTE **)&der);
+     INT32            fillSize;
+ 
+     pAssert(eOut != NULL && hIn != NULL);
+@@ -858,7 +858,7 @@ RSASSA_Decode(
+ {
+     BOOL             fail = FALSE;
+     BYTE            *der;
+-    INT32            derSize = _cpri__GetHashDER(hashAlg, &der);
++    INT32            derSize = _cpri__GetHashDER(hashAlg, (const BYTE **)&der);
+     INT32            hashSize = _cpri__GetDigestSize(hashAlg);
+     INT32            fillSize;
+ 

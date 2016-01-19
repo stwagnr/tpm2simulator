@@ -1,0 +1,24 @@
+diff --git a/platform/Entropy.c b/platform/Entropy.c
+index 888789c..f561ca8 100644
+--- a/platform/Entropy.c
++++ b/platform/Entropy.c
+@@ -49,3 +49,19 @@
+ #include <memory.h>
+ #include "TpmBuildSwitches.h"
++ 
++#if defined(_Win32) || defined(WIN32)
++#else
++// Quick and dirty
++#include <stdio.h>
++int32_t rand_s(uint32_t* rndNum) {
++    FILE *fp;
++    if (fp = fopen("/dev/urandom", "r")) {
++        fread(rndNum, sizeof(char), 1, fp);
++        fclose(fp);
++        return 0;
++    }
++    return -1;
++}
++#endif
++
+

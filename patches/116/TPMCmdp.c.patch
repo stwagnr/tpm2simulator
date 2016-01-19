@@ -1,0 +1,42 @@
+diff --git a/simulator/TPMCmdp.c b/simulator/TPMCmdp.c
+index 100644
+--- a/simulator/TPMCmdp.c
++++ b/simulator/TPMCmdp.c
+@@ -10,7 +10,15 @@
+ #include "DRTM_fp.h"
+ #include "_TPM_Init_fp.h"
+ #include "TpmFail_fp.h"
++
++// CHANGE START
++#if defined(_Win32) || defined(WIN32)
+ #include <windows.h>
++#else
++#define SOCKET int
++#endif
++// CHANGE END
++
+ #include "TpmTcpProtocol.h"
+ static BOOL     s_isPowerOn = FALSE;
+ 
+@@ -236,11 +244,14 @@
+     void
+     )
+ {
++#if defined(_Win32) || defined(WIN32)
+     RPC_STATUS status;
++#endif
+ 
+     // Stop TPM
+     TPM_TearDown();
+ 
++#if defined(_Win32) || defined(WIN32)
+     status = RpcMgmtStopServerListening(NULL);
+     if (status != RPC_S_OK)
+     {
+@@ -254,5 +265,6 @@
+         printf_s("RpcServerUnregisterIf returned 0x%x\n", status);
+         exit(status);
+     }
++#endif
+ }
+ 

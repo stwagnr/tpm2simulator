@@ -1,0 +1,7 @@
+diff --git a/platform/LocalityPlat.c b/platform/LocalityPlat.c
+index 5498183..247c24c 100644
+--- a/platform/LocalityPlat.c
++++ b/platform/LocalityPlat.c
+@@ -47,1 +47,2 @@
+ #include "TpmError.h"
++static int s_RsaKeyCacheEnabled = FALSE;

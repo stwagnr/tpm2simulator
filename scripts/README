@@ -1,0 +1,36 @@
+Cross-compilation:
+====================
+
+To cross-compile the TPM2 simulator one need to follow the following steps:
+
+1) Create a build directory:
+    # mkdir build && cd build
+
+2) Setup Makefiles for cross-compilation:
+    # cmake -DCMAKE_TOOLCHAIN_FILE=../toolchain_arm.cmake .. -G "Unix Makefiles"
+
+3) Cross-compile the TPM2 simulator:
+    # make
+
+4) Copy the following files to the target (e.g. usbarmory):
+    . ./Simulator
+    . ./build/tpm/libTPM.so
+    . ./build/platform/libplatform.so
+    . ./build/OsslCryptoEngine/libCryptoEngine.so
+
+
+
+TPM2 Simulator execution:
+=========================
+
+Host-side:
+------------
+Execute the TPM2 Simulator on the target platform (usbarmory):
+    # ./Simulator
+
+
+Client-side:
+------------
+Execute the testing suite of the IBM TSS:
+    # TPM_SERVER_NAME=10.0.0.1 ./reg.sh -a 
+

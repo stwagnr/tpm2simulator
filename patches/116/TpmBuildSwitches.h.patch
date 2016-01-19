@@ -1,0 +1,18 @@
+diff --git a/tpm/include/TpmBuildSwitches.h b/tpm/include/TpmBuildSwitches.h
+index 100644
+--- a/tpm/include/TpmBuildSwitches.h
++++ b/tpm/include/TpmBuildSwitches.h
+@@ -11,1 +11,5 @@
++#if defined(_Win32) || defined(WIN32)
+ #define ALIGN_TO(boundary) __declspec(align(boundary))
++#else
++#define ALIGN_TO(boundary) __attribute__ ((aligned (boundary)))
++#endif
+@@ -43,2 +43,7 @@
++#if defined(_Win32) || defined(WIN32)
+ #define LIB_EXPORT __declspec(dllexport)
+ // #define LIB_EXPORT
++#else 
++//#define LIB_EXPORT __declspec(dllexport)
++#define LIB_EXPORT
++#endif

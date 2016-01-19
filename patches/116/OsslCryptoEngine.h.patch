@@ -1,0 +1,30 @@
+diff --git a/OsslCryptoEngine/OsslCryptoEngine.h b/OsslCryptoEngine/OsslCryptoEngine.h
+index 100644
+--- a/OsslCryptoEngine/OsslCryptoEngine.h
++++ b/OsslCryptoEngine/OsslCryptoEngine.h
+@@ -6,7 +6,12 @@
+ #include <openssl/ec.h>
+ #include <openssl/rand.h>
+ #include <openssl/bn.h>
++#if defined(_Win32) || defined(WIN32)
+ #include <openSSL/ec_lcl.h>
++#else
++#include <openssl/ec_lcl.h>
++#include <string.h>
++#endif
+ #define     CRYPTO_ENGINE
+ #include "CryptoEngine.h"
+ #include "CpriMisc_fp.h"
+@@ -33,5 +34,12 @@
+     TPM_ALG_ID               hashAlg;
+     UINT16                   keySizeInBits;
+ } KDFa_CONTEXT;
++
++#if defined(_Win32) || defined(WIN32)
++#else
++#ifndef UNREFERENCED_PARAMETER
++#define UNREFERENCED_PARAMETER(x) (x);
++#endif
++#endif
+ #endif // _OSSL_CRYPTO_ENGINE_H
+ 

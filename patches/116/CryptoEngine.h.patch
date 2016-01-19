@@ -1,0 +1,13 @@
+diff --git a/include/CryptoEngine.h b/include/CryptoEngine.h
+index 8c0f30e..c055453 100644
+--- a/include/CryptoEngine.h
++++ b/include/CryptoEngine.h
+@@ -6,7 +6,7 @@
+ #include    "TpmError.h"
+ #include    "swap.h"
+ #include    "Implementation.h"
+-#include    "TPM_types.h"
++#include    "TPM_Types.h"
+ //#include    "TPMB.h"
+ #include    "bool.h"
+ #include    "Platform.h"

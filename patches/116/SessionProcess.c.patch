@@ -1,0 +1,21 @@
+diff --git a/tpm/main/SessionProcess.c b/tpm/main/SessionProcess.c
+index 100644
+--- a/tpm/main/SessionProcess.c
++++ b/tpm/main/SessionProcess.c
+@@ -1965,2 +1965,16 @@
+ }
+ 
++void
++SessionRemoveAssociationToHandle(
++    TPM_HANDLE           handle
++    )
++{
++    UINT32               i;
++    for(i = 0; i < MAX_SESSION_NUM; i++)
++    {
++        if(s_associatedHandles[i] == handle)
++        {
++            s_associatedHandles[i] = TPM_RH_NULL;
++        }
++    }
++}

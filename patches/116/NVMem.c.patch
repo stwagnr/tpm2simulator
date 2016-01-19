@@ -1,0 +1,29 @@
+diff --git a/platform/NVMem.c b/platform/NVMem.c
+index 5498183..247c24c 100644
+--- a/platform/NVMem.c
++++ b/platform/NVMem.c
+@@ -43,8 +43,12 @@ _plat__NVEnable(
+     if(s_NVFile != NULL) return 0;
+ 
+     // Try to open an exist NVChip file for read/write
++#if defined(_Win32) || defined(WIN32)
+     if(0 != fopen_s(&s_NVFile, "NVChip", "r+b"))
+         s_NVFile = NULL;
++#else
++    s_NVFile = fopen("/tmp/NVChip", "r+b");
++#endif
+ 
+     if(NULL != s_NVFile)
+     {
+@@ -60,7 +64,11 @@ _plat__NVEnable(
+         memset(s_NV, 0, NV_MEMORY_SIZE);
+ 
+         // If NVChip file does not exist, try to create it for read/write
++#if defined(_Win32) || defined(WIN32)
+         fopen_s(&s_NVFile, "NVChip", "w+b");
++#else
++        s_NVFile = fopen("/tmp/NVChip", "w+b");
++#endif
+         // Start initialize at the end of new file
+         fseek(s_NVFile, 0, SEEK_END);
+         // Write 0s to NVChip file

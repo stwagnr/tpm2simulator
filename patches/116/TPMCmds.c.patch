@@ -1,0 +1,42 @@
+diff --git a/simulator/TPMCmds.c b/simulator/TPMCmds.c
+index 100644
+--- a/simulator/TPMCmds.c
++++ b/simulator/TPMCmds.c
+@@ -2,14 +2,36 @@
+ #include <stdio.h>
+ #include <stdint.h>
+ #include <ctype.h>
++
++// CHANGE START
++#if defined(_Win32) || defined(WIN32)
+ #include <windows.h>
+ #include <strsafe.h>
++#else
++#include "bool.h"
++#include <sys/socket.h>
++#define SOCKET int
++#include <stdio.h>
++#define __cdecl
++#define fprintf_s fprintf
++#endif
++// CHANGE END
++
+ #include "string.h"
+ #include "TpmTcpProtocol.h"
++
++// CHANGE START
++#if defined(_Win32) || defined(WIN32)
+ #include "..\tpm\include\TpmBuildSwitches.h"
+ #include "..\tpm\include\prototypes\Manufacture_fp.h"
++#else
++#include "../tpm/include/TpmBuildSwitches.h"
++#include "../tpm/include/prototypes/Manufacture_fp.h"
++#endif
++// CHANGE END
++
+ #define PURPOSE \
++"TPM Simulator for Windows and Linux.\n"
+-"TPM Reference Simulator.\nCopyright Microsoft 2010, 2011.\n"
+ #define DEFAULT_TPM_PORT 2321
+ void* MainPointer;
+ int _plat__NVEnable(void* platParameters);
