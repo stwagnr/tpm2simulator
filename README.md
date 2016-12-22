@@ -57,7 +57,7 @@ make
 
 
 ### Testing
-In order to test if the simulator is working correctly, we use [IBM's TPM 2.0 TSS](https://github.com/stwagnr/ibmtpm20tss)
+In order to test if the simulator is working correctly, we use [IBM's TPM 2.0 TSS](https://sourceforge.net/projects/ibmtpm20tss)
 
 1. Open a Terminal and start the TPM simulator
 
