@@ -27,10 +27,10 @@ else(CROSS)
 endif(CROSS)
 
 if(WIN32)
-	target_link_libraries(CryptoEngine 
+	target_link_libraries(CryptoEngine
 		"${CMAKE_CURRENT_BINARY_DIR}/../platform/Debug/platform.lib")
 endif()
 if(UNIX)
-	target_link_libraries(CryptoEngine 
+	target_link_libraries(CryptoEngine
 		"${CMAKE_CURRENT_BINARY_DIR}/../platform/libplatform.so")
 endif()

@@ -18,7 +18,7 @@ import settings
 class Commands:
     """
     """
-    
+
     def __init__(self):
         self.command_header_file = CommandsHeaderFile()
 
@@ -92,7 +92,8 @@ class Commands:
             self.command_dispatch_data.write()
 
         # create HandleProcess.c
-        self.create_handle_process()
+        if settings.SPEC_VERSION_INT < 138:
+            self.create_handle_process()
 
     # Extracts information from commands file
     # Parameters:

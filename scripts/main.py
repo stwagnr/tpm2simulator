@@ -14,6 +14,18 @@ import modules.part4_spt_routines.tpm2_part4_spt_routines_header_files as spt_ro
 import modules.part4_spt_routines.tpm2_part4_spt_routines as spt_routines
 import modules.part4_spt_routines.tpm2_part4_spt_routines_annex as spt_routines_annex
 
+
+# --------------------------------------------------------------------------- #
+# Check settings
+# --------------------------------------------------------------------------- #
+if len(sys.argv) == 2 and len(sys.argv[1]) == 3 and sys.argv[1].startswith("1"):
+    print "updating version to " + sys.argv[1]
+    settings.update_spec(sys.argv[1])
+
+if not settings.SET:
+    print "Please check and set the values in 'settings.py'"
+    exit(1)
+
 # --------------------------------------------------------------------------- #
 # Dictionary with mappings of sections to folders
 # --------------------------------------------------------------------------- #
@@ -61,24 +73,20 @@ dict_sections_spt_routines = OrderedDict([
 ])
 
 # Dictionary: supporting routines annex
-dict_sections_spt_routines_annex = OrderedDict([
-    ("(informative) Implementation Dependent", "include"),
-    ("(informative) Cryptographic Library Interface", "../OsslCryptoEngine"),
-    ("(informative) Simulation Environment", "../platform"),
-    ("(informative) Remote Procedure Interface", "../simulator"),
-])
-
-
-# --------------------------------------------------------------------------- #
-# Check settings
-# --------------------------------------------------------------------------- #
-if len(sys.argv) == 2 and len(sys.argv[1]) == 3 and sys.argv[1].startswith("1"):
-    print "updating version to " + sys.argv[1]
-    settings.update_spec(sys.argv[1])
-
-if not settings.SET:
-    print "Please check and set the values in 'settings.py'"
-    exit(1)
+if settings.SPEC_VERSION_INT < 138:
+    dict_sections_spt_routines_annex = OrderedDict([
+        ("(informative) Implementation Dependent", "include"),
+        ("(informative) Cryptographic Library Interface", "../OsslCryptoEngine"),
+        ("(informative) Simulation Environment", "../platform"),
+        ("(informative) Remote Procedure Interface", "../simulator"),
+    ])
+else:
+    dict_sections_spt_routines_annex = OrderedDict([
+        ("(informative) Implementation Dependent", "include"),
+        ("(informative) Library-Specific", "../OsslCryptoEngine"),
+        ("(informative) Simulation Environment", "../platform"),
+        ("(informative) Remote Procedure Interface", "../simulator"),
+    ])
 
 # --------------------------------------------------------------------------- #
 # Extract code from PDF/XML files
@@ -101,12 +109,14 @@ s.extract(structures_file)
 
 print ""
 print "Reading " + settings.TPM20_SPEC_COMMANDS
+sys.stdout.flush()
 commands_file = file_handler.get_fd(settings.TPM20_SPEC_COMMANDS)
 print ""
 c.extract(commands_file, dict_sections_commands)
 
 print ""
 print "Reading " + settings.TPM20_SPEC_SUPPORTING_ROUTINES
+sys.stdout.flush()
 support_file = file_handler.get_fd(settings.TPM20_SPEC_SUPPORTING_ROUTINES)
 print ""
 h.extract(support_file, dict_sections_spt_routines_header_files)

@@ -2,6 +2,7 @@
 
 from modules.part2_structures.marshal.tpm2_partx_marshal_simple_type import SimpleMarshaller
 from modules.part2_structures.marshal import tpm2_partx_marshal_templates
+import settings
 
 
 class BitsTableMarshaller(SimpleMarshaller):
@@ -17,7 +18,10 @@ class BitsTableMarshaller(SimpleMarshaller):
 
         reserved = reserved.lower()
 
-        template = tpm2_partx_marshal_templates.TYPE_Unmarshal_bits
+        if settings.SPEC_VERSION_INT < 138:
+            template = tpm2_partx_marshal_templates.TYPE_Unmarshal_bits_pre138
+        else:
+            template = tpm2_partx_marshal_templates.TYPE_Unmarshal_bits
         code = template.safe_substitute(TYPE=mrshl_type, TO_TYPE=to_type, RESERVED=reserved, RC_FAIL=rc_fail)
 
         return code

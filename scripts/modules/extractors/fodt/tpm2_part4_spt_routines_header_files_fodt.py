@@ -119,6 +119,9 @@ class SptRoutinesHeaderFilesFODT(ExtractionNavigator):
             print "    * " + function.get_text().strip()
 
             entry = function.find_next(constants.XML_TEXT_LIST)
+            while not entry.has_attr(constants.XML_TEXT_STYLE_NAME):
+                entry = entry.find_next(constants.XML_TEXT_LIST)
+
             if function.get_text() == "Global.h":
                 entry = function.find_next(constants.XML_TEXT_H, {constants.XML_TEXT_OUTLINE_LEVEL: '3'})
                 while isinstance(entry, Tag) and entry.get_text().strip() != "Includes":

@@ -18,6 +18,7 @@ The result of the extraction scripts is a complete set of the source files for a
 #### Requirements
 Make sure the following packages are installed on your system:
 ```
+patch
 cmake
 build-essential
 python-bs4

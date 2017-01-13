@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import re
+import settings
 from modules import constants
 from modules import utils
 from modules.part2_structures.marshal.tpm2_partx_marshal_simple_type import SimpleMarshaller
@@ -21,8 +22,12 @@ class Marshaller:
 
     # Initialises paths to destination files of marshalling source code, and instantiates all marshalling subclasses
     def __init__(self):
-        self.file_path = constants.SRC_PATH + constants.TPM_PATH + "/support/marshal.c"
-        self.file_path_fp = constants.SRC_PATH + constants.TPM_PATH + "/include/prototypes/marshal_fp.h"
+        if settings.SPEC_VERSION_INT < 138:
+            self.file_path = constants.SRC_PATH + constants.TPM_PATH + "/support/marshal.c"
+            self.file_path_fp = constants.SRC_PATH + constants.TPM_PATH + "/include/prototypes/marshal_fp.h"
+        else:
+            self.file_path = constants.SRC_PATH + constants.TPM_PATH + "/support/Marshal.c"
+            self.file_path_fp = constants.SRC_PATH + constants.TPM_PATH + "/include/prototypes/Marshal_fp.h"
         self.file = None
 
         self.content = u""
@@ -106,7 +111,7 @@ class Marshaller:
 
                 if unsigned_marshaled:
                     base_type = "u"+base_type
-                
+
                 if c_base_type or already_marshaled or unsigned_marshaled:
                     # if original type was already marshaled somehow
                     # marshalling new type would be redundant - change to define for new type
@@ -316,7 +321,7 @@ class Marshaller:
         else:
             self.content += self.bits_table_marshaller.create_marshal_code(current_type, size)
             self.content_fp += self.bits_table_marshaller.create_marshal_fp(current_type)
-        
+
         tpm2_partx_type_mapping.dictionary[current_type] = [base_type, table.number]
     # end of method - handle_bits_table(self, table):
 
@@ -555,8 +560,12 @@ class Marshaller:
     # Parameters:
     # table - internal representation of the table, based on which marshaling functions are generated
     def handle_structures_table_empty_structure(self, table):
-        self.content += tpm2_partx_marshal_templates.TPMS_EMPTY_UNMARSHAL
-        self.content += tpm2_partx_marshal_templates.TPMS_EMPTY_MARSHAL
+        if settings.SPEC_VERSION_INT < 138:
+            self.content += tpm2_partx_marshal_templates.TPMS_EMPTY_UNMARSHAL_pre138
+            self.content += tpm2_partx_marshal_templates.TPMS_EMPTY_MARSHAL_pre138
+        else:
+            self.content += tpm2_partx_marshal_templates.TPMS_EMPTY_UNMARSHAL
+            self.content += tpm2_partx_marshal_templates.TPMS_EMPTY_MARSHAL
         self.content_fp += self.structure_table_marshaller.create_unmarshal_fp("TPMS_EMPTY")
         self.content_fp += self.structure_table_marshaller.create_marshal_fp("TPMS_EMPTY")
 
@@ -668,7 +677,10 @@ class Marshaller:
     # Create marshaling source files with FileHandler at path defined in the constructor, containing marshaling
     # functions based on the tables
     def write(self):
-        self.content = u'#include    "InternalRoutines.h"\n\n' + self.content
+        if settings.SPEC_VERSION_INT < 138:
+            self.content = u'#include    "InternalRoutines.h"\n\n' + self.content
+        else:
+            self.content = u'#include    "Tpm.h"\n\n' + self.content
 
         # marshal.c
         FileHandling.write_file(self.file_path, self.content)

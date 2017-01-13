@@ -2,6 +2,14 @@ MESSAGE("${Green}Patching files${ColorReset}\n")
 
 file(GLOB PATCH_FILES "../../patches/${SPEC_VERSION}/*.patch")
 
+FIND_PROGRAM(PATCH_BIN NAMES patch PATHS /usr/bin/ /bin)
+
+if(PATCH_BIN STREQUAL PATCH_BIN-NOTFOUND)
+	MESSAGE(FATAL_ERROR "${Red}Error: patch binaries not found. Please install the patch package.${ColorReset}\n")
+else()
+	MESSAGE(STATUS "${Green}Patch binaries found.${ColorReset}\n")
+endif()
+
 foreach(ITR ${PATCH_FILES})
 	MESSAGE("Attempting to apply patch file '${ITR}'")
 	execute_process(WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/../src

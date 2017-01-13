@@ -4,7 +4,7 @@ import re
 
 from modules.part2_structures.marshal.tpm2_partx_marshal_simple_type import SimpleMarshaller
 from modules.part2_structures.marshal import tpm2_partx_marshal_templates as MarshalTemplates
-
+import settings
 
 class StructureTableMarshaller(SimpleMarshaller):
 
@@ -44,7 +44,12 @@ class StructureTableMarshaller(SimpleMarshaller):
         sizefield = False
 
         structure = "t."
-        if mrshl_type.startswith("TPMS") or mrshl_type.startswith("TPMT") or mrshl_type.startswith("TPML"):
+        if mrshl_type.startswith("TPMS") or mrshl_type.startswith("TPMT") or mrshl_type.startswith("TPML") or \
+                (settings.SPEC_VERSION_INT>=138 and table.rows[0][0].endswith("=")):
+            structure = ""
+
+        # FIX: There is no "=" after size in row 1
+        if "TPM2B_SENSITIVE Structure" in table.name and settings.SPEC_VERSION_INT>=138:
             structure = ""
 
         for row in table.rows:
@@ -67,7 +72,8 @@ class StructureTableMarshaller(SimpleMarshaller):
                                                                                     MEMBER=structure + parameter,
                                                                                     TO_MEMBER=", allowNull")
                 if sizefield:
-                    code += MarshalTemplates.if_success_execute.safe_substitute(COMMAND=MarshalTemplates.check_struct_size)
+                    code += MarshalTemplates.if_success_execute.safe_substitute(
+                        COMMAND=MarshalTemplates.check_struct_size.safe_substitute(STRUCT=structure))
                     return_string = MarshalTemplates.RETURN_SUCCESS
                 continue
 
@@ -152,7 +158,7 @@ class StructureTableMarshaller(SimpleMarshaller):
                 code += MarshalTemplates.call_TYPE_unmarshal_struct.safe_substitute(TO_TYPE=to_type,
                                                                                     MEMBER=structure + struct_member[:-1],
                                                                                     TO_MEMBER="")
-                code += MarshalTemplates.size_zero_check.safe_substitute(STRUCT="t.",
+                code += MarshalTemplates.size_zero_check.safe_substitute(STRUCT=structure,
                                                                          RETURN="TPM_RC_SIZE")
                 code += "    startSize = *size;\n"
 
@@ -177,7 +183,8 @@ class StructureTableMarshaller(SimpleMarshaller):
                                                                                     TO_MEMBER="")
 
                 if sizefield:
-                    code += MarshalTemplates.if_success_execute.safe_substitute(COMMAND=MarshalTemplates.check_struct_size)
+                    code += MarshalTemplates.if_success_execute.safe_substitute(
+                        COMMAND=MarshalTemplates.check_struct_size.safe_substitute(STRUCT=structure))
                     return_string = MarshalTemplates.RETURN_SUCCESS
 
             if struct_member == "size":
@@ -188,7 +195,8 @@ class StructureTableMarshaller(SimpleMarshaller):
 
             # FIX: There is no "=" after size in row 1
             if "TPM2B_SENSITIVE Structure" in table.name and struct_member != "size":
-                code += MarshalTemplates.if_success_execute.safe_substitute(COMMAND=MarshalTemplates.check_struct_size)
+                code += MarshalTemplates.if_success_execute.safe_substitute(
+                    COMMAND=MarshalTemplates.check_struct_size.safe_substitute(STRUCT=structure))
                 return_string = MarshalTemplates.RETURN_SUCCESS
         # end of loop - for row in table.rows:
 
@@ -215,7 +223,12 @@ class StructureTableMarshaller(SimpleMarshaller):
         sizefield = False
 
         structure = "t."
-        if mrshl_type.startswith("TPMS") or mrshl_type.startswith("TPMT") or mrshl_type.startswith("TPML"):
+        if mrshl_type.startswith("TPMS") or mrshl_type.startswith("TPMT") or mrshl_type.startswith("TPML") or \
+                (settings.SPEC_VERSION_INT >= 138 and table.rows[0][0].endswith("=")):
+            structure = ""
+
+        # FIX: There is no "=" after size in row 1
+        if "TPM2B_SENSITIVE Structure" in table.name and settings.SPEC_VERSION_INT>=138:
             structure = ""
 
         for row in table.rows:
@@ -285,7 +298,7 @@ class StructureTableMarshaller(SimpleMarshaller):
                     code += MarshalTemplates.call_marshal_size.safe_substitute()
 
             if parameter == "size":
-                code += "    if(source->t.size == 0)\n"
+                code += "    if(source->"+structure+"size == 0)\n"
                 code += "        return written;\n\n"
 
         code += "    return written;\n"
