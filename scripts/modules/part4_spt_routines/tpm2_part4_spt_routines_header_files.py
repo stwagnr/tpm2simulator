@@ -5,7 +5,7 @@ from modules import constants
 from modules.file_handling import FileHandling
 from modules.extractors.license_extractor import LicenseExtractor
 import settings
-
+import re
 
 class SptRoutinesHeaderFiles():
     """
@@ -27,12 +27,12 @@ class SptRoutinesHeaderFiles():
                                                     "// #define TABLE_DRIVEN_DISPATCH")
 
             if "VendorString.h" in function.name:
-                file_content = file_content.replace('// #define    MANUFACTURER    "MSFT"',
-                                                  '#define   MANUFACTURER      "' + str(settings.MANUFACTURER) + '"')
-                file_content = file_content.replace('// #define       VENDOR_STRING_1       "DPA "',
-                                                  '#define   VENDOR_STRING_1   "' + str(settings.VENDOR_STRING_1) + '"')
-                file_content = file_content.replace('// #define   FIRMWARE_V1         (0x20140711)',
-                                                  '#define   FIRMWARE_V1       ' + str(settings.FIRMWARE_V1))
+                file_content = re.sub(r"//[ ]*#define[ ]*MANUFACTURER[ ]*\"MSFT\"",
+                                      '#define  MANUFACTURER      "' + str(settings.MANUFACTURER) + '"', file_content)
+                file_content = re.sub(r"//[ ]*#define[ ]*VENDOR_STRING_1[ ]*\"DPA \"",
+                                      '#define  VENDOR_STRING_1   "' + str(settings.VENDOR_STRING_1) + '"', file_content)
+                file_content = re.sub(r"//[ ]*#define[ ]*FIRMWARE_V1[ ]*\(.*?\)",
+                                      '#define  FIRMWARE_V1       "' + str(settings.FIRMWARE_V1) + '"', file_content)
             #####################################################################
 
             file_path = constants.SRC_PATH + constants.TPM_PATH + function.folder_name + "/" + function.name

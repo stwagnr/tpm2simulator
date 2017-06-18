@@ -31,22 +31,27 @@ class SptRoutinesAnnexFODT(ExtractionNavigator):
 
             print " "*4 + "* " + function.get_text().strip()
 
-            if (function.get_text().strip() == "RSA Files"
-                    or function.get_text().strip() == "Elliptic Curve Files"):
+            if (function.get_text().strip() == "RSA Files" or
+                    function.get_text().strip() == "Elliptic Curve Files" or
+                    function.get_text().strip() == "OpenSSL-Specific Files"):
                 backup = function
                 while function is not None:
                     # find first function entry
-                    function = self.next_function(function, 3)
+                    function = self.next_function(function, 3, True)
                     if function is None:
                         break
 
                     print " "*8 + "- " + function.get_text().strip()
 
-                    if function.get_text().strip() == "Alternative RSA Key Generation":
+                    if (function.get_text().strip() == "Alternative RSA Key Generation" or
+                        function.get_text().strip() == "Header Files" or
+                        function.get_text().strip() == "Source Files"):
+                        backup2 = function
                         while True:
                             # find first function entry
                             function = self.next_function(function, 4, True)
                             if function is None:
+                                function = backup2
                                 break
 
                             print " "*12 + ". " + function.get_text().strip()

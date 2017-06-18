@@ -6,7 +6,7 @@ from modules.extractors.fodt.tpm2_partx_extraction_navigator_fodt import Extract
 from modules import constants
 from modules.file_handling import FileHandling
 from modules.extractors.license_extractor import LicenseExtractor
-
+import settings
 
 class SptRoutines(ExtractionNavigator):
     """
@@ -19,6 +19,9 @@ class SptRoutines(ExtractionNavigator):
     # Returns:
     # file path of the given file name
     def set_file_path(self, name_folder, name):
+        if name_folder is None:
+            name_folder = "subsystem/"
+
         if "CommandAttributeData.c" in name:
             file_path = constants.SRC_PATH + constants.TPM_PATH + "include/" + name
         elif "Attest_spt.c" in name:
@@ -31,6 +34,8 @@ class SptRoutines(ExtractionNavigator):
             file_path = self.COMMAND_PATH + "Object/" + name
         elif "Policy_spt.c" in name:
             file_path = self.COMMAND_PATH + "EA/" + name
+        elif "EncryptDecrypt_spt.c" in name:
+            file_path = self.COMMAND_PATH + "Symmetric/" + name
         elif "HandleProcess_fp.h" in name:
             file_path = constants.SRC_PATH + constants.TPM_PATH + "include/prototypes/" + name
         elif "CommandDispatcher_fp.h" in name:
@@ -51,12 +56,18 @@ class SptRoutines(ExtractionNavigator):
             if spt_routine.name.endswith(".c"):
                 prototype_file = PrototypeFile(spt_routine.short_name)
                 prototype_file.extract_prototype_functions(spt_routine)
+
+                if settings.SPEC_VERSION_INT >= 138 and "ExecuteCommand" in spt_routine.short_name:
+                    prototype_file.file_path = prototype_file.file_path.replace("ExecuteCommand", "ExecCommand")
                 prototype_file.write()
 
             file_content = spt_routine.elements_to_string()
 
             # Set file path
             file_path = self.set_file_path(spt_routine.folder_name, spt_routine.file_name)
+
+            if settings.SPEC_VERSION_INT >= 138 and spt_routine.name.endswith(".h"):
+                file_path = constants.SRC_PATH + constants.TPM_PATH + "include/" + spt_routine.file_name
 
             # Write file
             FileHandling.write_file(file_path, file_content)

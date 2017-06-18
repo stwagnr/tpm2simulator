@@ -18,6 +18,7 @@ The result of the extraction scripts is a complete set of the source files for a
 #### Requirements
 Make sure the following packages are installed on your system:
 ```
+patch
 cmake
 build-essential
 python-bs4
@@ -57,7 +58,7 @@ make
 
 
 ### Testing
-In order to test if the simulator is working correctly, we use [IBM's TPM 2.0 TSS](https://github.com/stwagnr/ibmtpm20tss)
+In order to test if the simulator is working correctly, we use [IBM's TPM 2.0 TSS](https://sourceforge.net/projects/ibmtpm20tss)
 
 1. Open a Terminal and start the TPM simulator
 

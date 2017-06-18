@@ -24,7 +24,7 @@ The following template is based on Part 4 (Section "Unmarshaling Code Prototype"
     Otherwise, it will return a Format-One response code (see TPM 2.0 Part 2).
 '''
 
-TPMS_EMPTY_UNMARSHAL = dedent("""\
+TPMS_EMPTY_UNMARSHAL_pre138 = dedent("""\
                         TPM_RC
                         TPMS_EMPTY_Unmarshal(
                             TPMS_EMPTY *target, BYTE **buffer, INT32  *size)
@@ -33,6 +33,20 @@ TPMS_EMPTY_UNMARSHAL = dedent("""\
                             UNREFERENCED(target);
                             UNREFERENCED(buffer);
                             UNREFERENCED(size);
+                            return TPM_RC_SUCCESS;      // return success
+                        }
+
+                        """)
+
+TPMS_EMPTY_UNMARSHAL = dedent("""\
+                        TPM_RC
+                        TPMS_EMPTY_Unmarshal(
+                            TPMS_EMPTY *target, BYTE **buffer, INT32  *size)
+                        {
+                            // unreferenced parameters (see Part 4: Unreferenced Parameter)
+                            NOT_REFERENCED(target);
+                            NOT_REFERENCED(buffer);
+                            NOT_REFERENCED(size);
                             return TPM_RC_SUCCESS;      // return success
                         }
 
@@ -56,7 +70,7 @@ The following template is based on Part 4 (Section "Unmarshaling Code Prototype"
     If the data is successfully marshaled, *buffer is advanced point to the first octet of the next location in
     the output buffer and *size is reduced by the number of octets placed in the buffer.
 '''
-TPMS_EMPTY_MARSHAL = dedent("""\
+TPMS_EMPTY_MARSHAL_pre138 = dedent("""\
                         UINT16
                         TPMS_EMPTY_Marshal(
                             TPMS_EMPTY *source, BYTE **buffer, INT32  *size)
@@ -65,6 +79,20 @@ TPMS_EMPTY_MARSHAL = dedent("""\
                             UNREFERENCED(source);
                             UNREFERENCED(buffer);
                             UNREFERENCED(size);
+                            return 0;                   // return zero
+                        }
+
+                        """)
+
+TPMS_EMPTY_MARSHAL = dedent("""\
+                        UINT16
+                        TPMS_EMPTY_Marshal(
+                            TPMS_EMPTY *source, BYTE **buffer, INT32  *size)
+                        {
+                            // unreferenced parameters (see Part 4: Unreferenced Parameter)
+                            NOT_REFERENCED(source);
+                            NOT_REFERENCED(buffer);
+                            NOT_REFERENCED(size);
                             return 0;                   // return zero
                         }
 
@@ -189,14 +217,14 @@ size_zero_check = Template(dedent("""\
 
 # Similar style as in TSS code
 if_success_execute = Template(dedent("""\
-                        
+
                         if (rc == TPM_RC_SUCCESS)
                             {
                                 ${COMMAND}
                             }
                         """))
 
-check_struct_size = "if(target->t.size != (startSize - *size)) return TPM_RC_SIZE;"
+check_struct_size = Template("if(target->${STRUCT}size != (startSize - *size)) return TPM_RC_SIZE;")
 
 ########################################################################################################################
 
@@ -247,8 +275,7 @@ The following template is based on Part 4 (Section "Unmarshaling Code Prototype"
     TPM_RC TYPE_Unmarshal(TYPE *target, BYTE **buffer, INT32 *size);
 
 '''
-
-TYPE_Unmarshal_bits = Template(dedent("""\
+TYPE_Unmarshal_bits_pre138 = Template(dedent("""\
                         TPM_RC
                         ${TYPE}_Unmarshal(
                             ${TYPE} *target, BYTE **buffer, INT32  *size)
@@ -265,6 +292,22 @@ TYPE_Unmarshal_bits = Template(dedent("""\
 
                         """))
 
+TYPE_Unmarshal_bits = Template(dedent("""\
+                        TPM_RC
+                        ${TYPE}_Unmarshal(
+                            ${TYPE} *target, BYTE **buffer, INT32  *size)
+                        {
+                            TPM_RC    rc;
+                            rc = ${TO_TYPE}_Unmarshal((${TO_TYPE} *)target, buffer, size);
+
+                            if(rc == TPM_RC_SUCCESS)
+                                if(*((${TO_TYPE} *)target) & (${TO_TYPE})${RESERVED})
+                                    rc = TPM_RC_RESERVED_BITS;
+
+                            return rc;
+                        }
+
+                        """))
 
 ########################################################################################################################
 

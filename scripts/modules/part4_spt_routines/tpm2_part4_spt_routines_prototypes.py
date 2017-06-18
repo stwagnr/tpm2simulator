@@ -50,8 +50,24 @@ class SupportRoutinesPrototypeFile(PrototypeFile):
                 continue
 
             # skip includes
-            result = re.search("(#([\s]*)(include|define|pragma)|FAIL)", code_line.string)
+            result = re.search("(#([\s]*)(include|define|pragma|error)|FAIL)", code_line.string)
+            if result and code_line.string.endswith("\\"):
+                while code_line.string.endswith("\\"):
+                    element = next(iterator, None)
+                    code_line = element
+                continue
             if result and "//%" not in code_line.string:
+                continue
+
+            result = re.search("^(const|extern).*?(;|{|=)", code_line.string)
+            if result:
+                while not code_line.string.endswith(";"):
+                    element = next(iterator, None)
+                    code_line = element
+                continue
+
+            result = re.search("^HASH_(DEF|IMPORT)", code_line.string)
+            if result:
                 continue
 
             if "CommandCapGetCCList" in code_line.string:
@@ -82,6 +98,7 @@ class SupportRoutinesPrototypeFile(PrototypeFile):
             elif code_line.string == "}" or code_line.string == "};":
                 add_to_proto = True
                 commands_fp = False
+
 
     # Writes support routine prototype into file at file_path
     def write(self):

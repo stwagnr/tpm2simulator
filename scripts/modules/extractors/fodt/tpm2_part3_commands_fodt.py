@@ -141,7 +141,7 @@ class CommandsExtractorFODT(CommandsExtractor, ExtractionNavigator):
     def next_entry(self, entry):
         entry = entry.find_next(constants.XML_TEXT_H, {constants.XML_TEXT_OUTLINE_LEVEL: '3'})
         while isinstance(entry, Tag) and entry.get_text().strip() != "Detailed Actions":
-            entry = entry.find_next(constants.XML_TEXT_H, {constants.XML_TEXT_OUTLINE_LEVEL: '3'})
+            entry = entry.find_next(text='Detailed Actions').parent
 
         # print entry.get_text().strip()
         section_entry = entry

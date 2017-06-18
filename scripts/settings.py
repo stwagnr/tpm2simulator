@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 SPEC_VERSION = "01.16"
+SPEC_VERSION_INT = 116
 SPEC_PATH = "../documents/116/"
 
 PUBLISHED_SPEC_VERSIONS = ["01.16"]
@@ -20,12 +21,13 @@ ENABLE_TABLE_DRIVEN_DISPATCHER = False
 
 
 def update_spec(version):
-    global SPEC_VERSION, SPEC_PATH
+    global SPEC_VERSION, SPEC_VERSION_INT, SPEC_PATH
     global DATA_ORIGIN_PDF_TXT
     global ENABLE_TABLE_DRIVEN_DISPATCHER
     global TPM20_SPEC_STRUCTURES, TPM20_SPEC_COMMANDS, TPM20_SPEC_SUPPORTING_ROUTINES
 
     SPEC_VERSION = "0" + version[0] + "." + version[1:3]
+    SPEC_VERSION_INT = int(version)
     SPEC_PATH = "../documents/" + version + "/"
     DATA_ORIGIN_PDF_TXT = (SPEC_VERSION in PUBLISHED_SPEC_VERSIONS)
 
@@ -49,7 +51,7 @@ def update_spec(version):
 # ---------------------------
 MANUFACTURER = "StWa"               # 4 characters
 VENDOR_STRING_1 = "AISE"            # 4 characters
-FIRMWARE_V1 = "(0x20150601)"        # "(0xYYYYMMDD)"
+FIRMWARE_V1 = "(0x20160601)"        # "(0xYYYYMMDD)"
 ##########################################################
 
 

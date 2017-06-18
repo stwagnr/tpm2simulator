@@ -53,7 +53,7 @@ def find_tpm_base_type_name(tpm_table_title):
     if result:
         return result.group(1)
     else:
-        return None
+        return "UINT8"
 
 
 # Extracts new type from table title (last type in title)

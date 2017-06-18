@@ -86,13 +86,41 @@ class SptRoutinesFODT(ExtractionNavigator):
 
         return code_blocks
 
+
+    # Handles file
+    # Parameters:
+    # sub_path
+    # function
+    def handle_files(self, sub_path, function):
+        entry = self.next_entry(function)
+
+        style = None
+
+        # find style of code block
+        if (isinstance(entry, Tag)
+            and entry.name == constants.XML_TEXT_LIST
+            and entry.has_attr(constants.XML_TEXT_STYLE_NAME)):
+            style = entry[constants.XML_TEXT_STYLE_NAME]
+            style_nr = int(re.search("([0-9]+)", style).group(1))
+
+        f = self.extract_code_blocks(entry, style)
+
+        f.name = self.correct_name(function)
+        f.short_name = f.name.replace(".c", "")
+        f.file_name = f.name.replace("()", ".c")
+        f.table_command = None
+        f.table_response = None
+        f.folder_name = sub_path
+
+        self.functions.append(f)
+
     # Append all functions from file to the list of functions
     # Parameters;
     # main_entry
     # name_section
     # name_folder
     def extract_function(self, main_entry, name_section, name_folder):
-        function = self.next_function(main_entry)
+        function = self.next_function(main_entry, 2, True)
 
         while function is not None:
 
@@ -103,33 +131,28 @@ class SptRoutinesFODT(ExtractionNavigator):
 
             # Skip Marshal.c (this file is created separately)
             if function.get_text().strip() == "Marshal.c":
-                function = self.next_function(function)
+                function = self.next_function(function, 2, True)
                 continue
 
-            entry = self.next_entry(function)
+            if (function.get_text().strip() == "Headers" or
+                function.get_text().strip() == "Source"):
+                backup = function
+                while function is not None:
+                    # find first function entry
+                    function = self.next_function(function, 3, True)
+                    if function is None:
+                        break
 
-            style = None
+                    print " " * 8 + "- " + function.get_text().strip()
 
-            # find style of code block
-            if (isinstance(entry, Tag)
-                and entry.name == constants.XML_TEXT_LIST
-                and entry.has_attr(constants.XML_TEXT_STYLE_NAME)):
-                style = entry[constants.XML_TEXT_STYLE_NAME]
-                style_nr = int(re.search("([0-9]+)", style).group(1))
+                    self.handle_files(name_folder, function)
 
-            f = self.extract_code_blocks(entry, style)
-
-            f.name = self.correct_name(function)
-            f.short_name = f.name.replace(".c", "")
-            f.file_name = f.name.replace("()", ".c")
-            f.table_command = None
-            f.table_response = None
-            f.folder_name = name_folder
-
-            self.functions.append(f)
+                function = backup
+            else:
+                self.handle_files(name_folder, function)
 
             # find next function
-            function = self.next_function(function)
+            function = self.next_function(function, 2, True)
 
     # Change the name of the function to the correct one
     # Parameters:
@@ -153,19 +176,21 @@ class SptRoutinesFODT(ExtractionNavigator):
     # entry
     # Returns:
     # string containing function\
-    def next_function(self, entry):
-        function = entry.find_next(constants.XML_TEXT_H)
+    def next_function(self, cur_function, num, first_intro=False):
+        function = cur_function.find_next(constants.XML_TEXT_H)
         while (isinstance(function, Tag)
-               and ((function.has_attr(constants.XML_TEXT_OUTLINE_LEVEL)
-                     and int(function[constants.XML_TEXT_OUTLINE_LEVEL]) != 2)
-                    # supporting routines:
-                    or function.get_text().strip() == "Introduction")):
+               and function.has_attr(constants.XML_TEXT_OUTLINE_LEVEL)
+               and int(function[constants.XML_TEXT_OUTLINE_LEVEL]) != num
+               or (first_intro and function.get_text().strip() == "Introduction")
+               or function.get_text().strip().endswith("Format")):
             function = function.find_next(constants.XML_TEXT_H)
-
-            if (function is not None
-                and function.has_attr(constants.XML_TEXT_OUTLINE_LEVEL)
-                and int(function[constants.XML_TEXT_OUTLINE_LEVEL]) < 2):
+            if function is None \
+                    or (function.has_attr(constants.XML_TEXT_OUTLINE_LEVEL)
+                        and int(function[constants.XML_TEXT_OUTLINE_LEVEL]) < num):
                 return None
+
+        if function.get_text().strip() == "Introduction":
+            return None
 
         return function
 
