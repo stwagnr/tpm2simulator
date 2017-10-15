@@ -1,4 +1,5 @@
 file(GLOB_RECURSE TPM_SOURCE_FILES "../../src/tpm/*.c")
+file(GLOB_RECURSE TPM_SOURCE_FILES2 "../../src/OsslCryptoEngine/*.c")
 file(GLOB_RECURSE TPM_HEADER_FILES "../../src/tpm/*.h")
 file(GLOB_RECURSE TPM_HEADER_FILES2 "../../src/include/*.h")
 
@@ -13,8 +14,14 @@ if (${SPEC_VERSION} EQUAL "138")
 endif()
 include_directories(../../src/tpm/include ../../src/tpm/include/prototypes)
 
-add_library(TPM SHARED 	${TPM_SOURCE_FILES}
-						${TPM_HEADER_FILES} ${TPM_HEADER_FILES2})
+if (${SPEC_VERSION} LESS "138")
+	add_library(TPM SHARED 	${TPM_SOURCE_FILES}
+							${TPM_HEADER_FILES} ${TPM_HEADER_FILES2})
+endif()
+if ((${SPEC_VERSION} GREATER "138") OR (${SPEC_VERSION} EQUAL "138"))
+	add_library(TPM SHARED 	${TPM_SOURCE_FILES} ${TPM_SOURCE_FILES2}
+							${TPM_HEADER_FILES} ${TPM_HEADER_FILES2})
+endif()
 
 target_compile_options(TPM PRIVATE -DSPEC_VERSION=${SPEC_VERSION})
 if (${SPEC_VERSION} LESS "138")
