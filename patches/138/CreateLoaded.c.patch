@@ -1,0 +1,18 @@
+diff --git a/tpm/command/Object/CreateLoaded.c b/tpm/command/Object/CreateLoaded.c
+index 2509a6a..b7f1d32 100644
+--- a/tpm/command/Object/CreateLoaded.c
++++ b/tpm/command/Object/CreateLoaded.c
+@@ -159,6 +159,11 @@ TPM2_CreateLoaded(
+                 newObject->attributes.epsHierarchy = SET;
+             // If so, use the primary seed and the digest of the template
+             // to seed the DRBG
++	    DRBG_InstantiateSeeded((DRBG_STATE *)rand,
++                         &HierarchyGetPrimarySeed(in->parentHandle)->b,
++                         PRIMARY_OBJECT_CREATION,
++                         (TPM2B *)PublicMarshalAndComputeName(publicArea, &name),
++                         &in->inSensitive.sensitive.data.b);
+         }
+         else
+             // This is an ordinary object so use the normal random number generator
+-- 
+2.1.4

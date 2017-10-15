@@ -1,0 +1,23 @@
+diff --git a/tpm/support/Manufacture.c b/tpm/support/Manufacture.c
+index c446a14..ae977ca 100644
+--- a/tpm/support/Manufacture.c
++++ b/tpm/support/Manufacture.c
+@@ -39,3 +39,2 @@
+ #define MANUFACTURE_C
+ #include "Tpm.h"
+-#include "TpmSizeChecks_fp.h"
+@@ -54,11 +53,6 @@ TPM_Manufacture(
+ )
+ {
+     TPM_SU orderlyShutdown;
+-#ifdef RUNTIME_SIZE_CHECKS
+-    // Call the function to verify the sizes of values that result from different
+-    // compile options.
+-    TpmSizeChecks();
+-#endif
+     // If TPM has been manufactured, return indication.
+     if(!firstTime && g_manufactured)
+         return 1;
+-- 
+2.1.4
+

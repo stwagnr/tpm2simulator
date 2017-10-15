@@ -8,6 +8,7 @@ from modules import constants
 from modules.extractors.table_extractor import TableExtractor
 from modules import data_structures
 from modules import utils
+import settings
 
 
 class CommandsExtractorPDF(CommandsExtractor, ExtractionNavigator):
@@ -98,9 +99,22 @@ class CommandsExtractorPDF(CommandsExtractor, ExtractionNavigator):
 
             print " "*4 + "* " + function.strip()
 
-            entry = self.next_entry(file, function, str(section_number) + "." + str(sub_section_number))
-            file.seek(file.find(entry) + len(entry))
-            
+	    if settings.SPEC_VERSION_INT == 138:
+                subsubcaption = 'Detailed Actions'
+                entry = str(section_number) + "." + str(sub_section_number)
+                count = 2
+                if ("_TPM_Init" in function) or ("TPM2_Startup" in function):
+                     count = 4
+                elif "TPM2_PP_Commands" in function:
+                     count = 3
+                file.seek(0)
+                for i in range(0, count):
+                     file.seek(file.find(entry) + len(entry))
+                file.seek(file.find(subsubcaption) + len(subsubcaption))
+            else:
+                entry = self.next_entry(file, function, str(section_number) + "." + str(sub_section_number))
+                file.seek(file.find(entry) + len(entry))
+
             f = self.extract_code_blocks(file, section_number)
 
             f.name = function.strip()
@@ -147,7 +161,11 @@ class CommandsExtractorPDF(CommandsExtractor, ExtractionNavigator):
     # entry
     # section
     def next_entry(self, file, entry, section):
-        result = re.search("(" + section + "\.\d+[ ]+Detailed Actions)\n", file)
+	searchstr = "(" + section + "\.\d+[ ]+Detailed Actions)\n"
+	if settings.SPEC_VERSION_INT == 138:
+		searchstr = searchstr.replace(section + "\.\d+", "")
+
+        result = re.search(searchstr, file)
         if result:
             entry = result.group(1)
 

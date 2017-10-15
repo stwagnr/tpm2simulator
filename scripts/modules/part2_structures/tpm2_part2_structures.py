@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import re  # regex
+import string
 
 import modules.constants as constants
 from modules.extractors.license_extractor import LicenseExtractor
@@ -156,6 +157,11 @@ class Structures:
 
             if "Reserved" in bitname:
                 bitname = "Reserved_from_" + str(size)
+
+	    pos = bitname.find(" ".encode())
+	    if pos != -1 and (bitname[pos - 1] in string.ascii_lowercase or bitname[pos - 1] in string.ascii_uppercase):
+		if (bitname[pos + 1] in string.ascii_lowercase or bitname[pos + 1] in string.ascii_uppercase):
+			bitname = bitname.replace(" ".encode(), "".encode())
 
             self.tpm_types_h_file_content += "        unsigned    " + bitname + utils.indent(bitname) + ": " + str(nr_of_bits) + ";\n"
             size += nr_of_bits

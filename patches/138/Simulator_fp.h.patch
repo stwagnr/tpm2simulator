@@ -1,0 +1,16 @@
+diff --git a/include/Simulator_fp.h b/include/Simulator_fp.h
+index 4cd013d..5c5b926 100644
+--- a/include/Simulator_fp.h
++++ b/include/Simulator_fp.h
+@@ -39,6 +39,8 @@
+ #ifndef _SIMULATOR_FP_H_
+ #define _SIMULATOR_FP_H_
+ 
++#include "TPM_Types.h"
++
+ // This function processes incoming platform requests.
+ BOOL
+ PlatformServer(
+-- 
+2.1.4
+

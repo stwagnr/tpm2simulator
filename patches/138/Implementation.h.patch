@@ -1,0 +1,16 @@
+diff --git a/tpm/include/Implementation.h b/tpm/include/Implementation.h
+index 39a8277..2f7c3fe 100644
+--- a/tpm/include/Implementation.h
++++ b/tpm/include/Implementation.h
+@@ -280,7 +280,7 @@
+ 
+ // From Vendor-Specific: Table 7 - Defines for Implementation Values
+ #define FIELD_UPGRADE_IMPLEMENTED NO
+-#define RADIX_BITS 32
++#define RADIX_BITS 64
+ #define HASH_ALIGNMENT 4
+ #define SYMMETRIC_ALIGNMENT 4
+ #define HASH_LIB OSSL
+-- 
+2.1.4
+

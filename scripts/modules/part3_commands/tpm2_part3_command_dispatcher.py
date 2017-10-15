@@ -37,7 +37,7 @@ class CommandDispatcher:
         self.file = None
         self.file_path = constants.SRC_PATH + constants.TPM_PATH + "/main/CommandDispatcher.c"
 
-        if settings.DATA_ORIGIN_PDF_TXT:
+        if settings.SPEC_VERSION_INT == 116:
             self.command = "TPM_CC                  commandCode,"
             self.command_var = "commandCode"
             self.selector = "commandCode"

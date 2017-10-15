@@ -1,0 +1,18 @@
+diff --git a/simulator/TPMCmds.c b/simulator/TPMCmds.c
+index eb266d8..0a75b1d 100644
+--- a/simulator/TPMCmds.c
++++ b/simulator/TPMCmds.c
+@@ -42,8 +42,10 @@
+ #include <stdint.h>
+ #include <ctype.h>
+ #include <string.h>
++#if defined(_Win32) || defined(WIN32)
+ #include <windows.h>
+ #include <winsock.h>
++#endif
+ #include "TpmTcpProtocol.h"
+ #include "Manufacture_fp.h"
+ #include "Platform_fp.h"
+-- 
+2.1.4
+

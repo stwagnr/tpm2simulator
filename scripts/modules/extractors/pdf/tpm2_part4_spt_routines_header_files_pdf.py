@@ -42,6 +42,8 @@ class SptRoutinesHeaderFilesPDF(ExtractionNavigator):
                 if s is " ":
                     code_offset += 1
 
+                code_offset = max(0, code_offset)
+
                 code_line = code_line[code_offset:]
                 code_blocks.append(data_structures.TPM2_Partx_CodeLine(code_line))
 
@@ -86,6 +88,7 @@ class SptRoutinesHeaderFilesPDF(ExtractionNavigator):
     # section_number
     # sub_path
     def extract_function(self, file, section_number, sub_path):
+
         sub_section_number = 1
         function, sub_section_number = self.next_function(file, section_number, sub_section_number)  # find first function entry
 
@@ -102,8 +105,17 @@ class SptRoutinesHeaderFilesPDF(ExtractionNavigator):
                 while "Includes" not in line.strip():
                     line = file.readline()[:-1]
                 f = self.extract_code_blocks(file, section_number, sub_section_number)
+            elif function == "Bits_fp.h":
+                f = self.extract_code_blocks(file, section_number, 3)
+            elif function == "GpMacros.h":
+		f = self.extract_code_blocks(file, section_number, 12)
+	    elif function == "NV.h":
+		f = self.extract_code_blocks(file, section_number, 15)
+            elif "SelfTest.h" in function or "SupportLibraryFunctionPrototypes_fp.h" in function:
+               f = self.extract_code_blocks(file, section_number, sub_section_number)
             else:
                 f = self.extract_code_blocks(file, section_number, None)
+
 
             print "    * " + function.strip()
 

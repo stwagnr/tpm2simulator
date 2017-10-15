@@ -1,0 +1,16 @@
+diff --git a/platform/include/prototypes/Platform_fp.h b/platform/include/prototypes/Platform_fp.h
+index 72e0db7..b5dfb33 100644
+--- a/platform/include/prototypes/Platform_fp.h
++++ b/platform/include/prototypes/Platform_fp.h
+@@ -39,6 +39,8 @@
+ #ifndef _PLATFORM_FP_H_
+ #define _PLATFORM_FP_H_
+ 
++#include "BaseTypes.h"
++
+ // Check if the cancel flag is set
+ 
+ // TRUE(1) if cancel flag is set
+-- 
+2.1.4
+

@@ -1,0 +1,39 @@
+diff --git a/simulator/TPMCmdp.c b/simulator/TPMCmdp.c
+index 3cf0964..4e351ea 100644
+--- a/simulator/TPMCmdp.c
++++ b/simulator/TPMCmdp.c
+@@ -40,8 +40,10 @@
+ #include <stdio.h>
+ #include <setjmp.h>
+ #include "TpmBuildSwitches.h"
++#if defined(_Win32) || defined(WIN32)
+ #include <windows.h>
+ #include <winsock.h>
++#endif
+ #include "Platform_fp.h"
+ #include "ExecCommand_fp.h"
+ #include "Manufacture_fp.h"
+@@ -266,9 +268,12 @@ _rpc__Shutdown(
+     void
+ )
+ {
++#if defined(_Win32) || defined(WIN32)
+     RPC_STATUS status;
++#endif
+     // Stop TPM
+     TPM_TearDown();
++#if defined(_Win32) || defined(WIN32)
+     status = RpcMgmtStopServerListening(NULL);
+     if(status != RPC_S_OK)
+     {
+@@ -281,6 +286,7 @@ _rpc__Shutdown(
+         printf("RpcServerUnregisterIf returned 0x%x\n", status);
+         exit(status);
+     }
++#endif
+     return;
+ }
+ 
+-- 
+2.1.4
+

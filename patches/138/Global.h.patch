@@ -1,0 +1,17 @@
+diff --git a/tpm/include/Global.h b/tpm/include/Global.h
+index f096f61..836b56c 100644
+--- a/tpm/include/Global.h
++++ b/tpm/include/Global.h
+@@ -39,7 +39,9 @@
+ #ifndef GLOBAL_H
+ #define GLOBAL_H
+ //#define SELF_TEST
++#if defined(_Win32) || defined(WIN32)
+ _REDUCE_WARNING_LEVEL_(2)
++#endif
+ #include <string.h>
+ //#include <setjmp.h>
+ #include <stddef.h>
+-- 
+2.1.4
+

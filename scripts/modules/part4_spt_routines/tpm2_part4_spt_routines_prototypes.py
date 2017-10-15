@@ -75,6 +75,12 @@ class SupportRoutinesPrototypeFile(PrototypeFile):
                 commands_prototype_file.append("TPMI_YES_NO\n") # previous line (return type) was skipped, add too
                 commands_fp = True
 
+	    # bugfix: also drop lines if the {} is indented the wrong way
+	    if code_line.string.strip().startswith("case") or code_line.string.strip().startswith("if") or  \
+		code_line.string.strip().startswith("else") or code_line.string.strip().startswith("for") or \
+		code_line.string.strip().startswith("return"):
+		add_to_proto = False
+
             if add_to_proto:
 
                 if code_line.string.strip() == "{":

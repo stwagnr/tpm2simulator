@@ -14,6 +14,8 @@ import modules.part4_spt_routines.tpm2_part4_spt_routines_header_files as spt_ro
 import modules.part4_spt_routines.tpm2_part4_spt_routines as spt_routines
 import modules.part4_spt_routines.tpm2_part4_spt_routines_annex as spt_routines_annex
 
+reload(sys) 
+sys.setdefaultencoding('utf8')
 
 # --------------------------------------------------------------------------- #
 # Check settings

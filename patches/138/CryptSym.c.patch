@@ -1,0 +1,33 @@
+diff --git a/tpm/crypt/CryptSym.c b/tpm/crypt/CryptSym.c
+index 5660ec8..296fce6 100644
+--- a/tpm/crypt/CryptSym.c
++++ b/tpm/crypt/CryptSym.c
+@@ -37,25 +37,6 @@
+ /******************************************************************************************************************/
+ 
+ #include "Tpm.h"
+-union tpmCryptKeySchedule_t {
+-#ifdef TPM_ALG_AES
+-    tpmKeyScheduleAES AES;
+-#endif
+-#ifdef TPM_ALG_SM4
+-    tpmKeyScheduleSM4 SM4;
+-#endif
+-#ifdef TPM_ALG_CAMELLIA
+-    tpmKeyScheduleCAMELLIA CAMELLIA;
+-#endif
+-#ifdef TPM_ALG_TDES
+-    tpmKeyScheduleTDES TDES[3];
+-#endif
+-#if SYMMETRIC_ALIGNMENT == 8
+-    uint64_t alignment;
+-#else
+-    uint32_t alignment;
+-#endif
+-};
+ 
+ // Each block cipher within a library is expected to conform to the same calling conventions with three parameters
+ // (keySchedule, in, and out) in the same order. That means that all algorithms would use the same order of the same
+-- 
+2.1.4
+

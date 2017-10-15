@@ -173,6 +173,14 @@ class TableExtractorPDF(TableExtractor):
         fst_header_line = file.readline()[:-1]  # read first line of table
         scd_header_line = None  # there might be a second header line
 
+	count = 0
+	while (fst_header_line.startswith(" ")):
+		count += 1
+		fst_header_line = fst_header_line.replace(" ", "", 1)
+
+	for i in range(0, count):
+		fst_header_line = fst_header_line.replace(" ", "  ", 1)
+
         columns_content = re.split("[ ]{2,}", fst_header_line)
         fst_columns_content = columns_content
         offsets = self.get_offsets(fst_header_line, columns_content)
@@ -242,6 +250,15 @@ class TableExtractorPDF(TableExtractor):
                 if line == "":
                     continue
 
+		# cut comment after first word or skip line
+		if len(fst_columns_content) >= 3 and "Comments" in fst_columns_content[2:3]:
+			comment_offset = offsets[fst_columns_content.index("Comments")]
+			space_index_add = line[comment_offset:].find(" ")
+			if "skipped" in line[comment_offset:]:
+				continue
+			if space_index_add != -1:
+				line = line[:(comment_offset + space_index_add)]
+
                 # end of page, either break, or calculate new offsets
                 if line.startswith("Page") or line.startswith("Family"):
                     for i in range(0, 5):
@@ -263,7 +280,11 @@ class TableExtractorPDF(TableExtractor):
 
                 if number_of_columns != 1 and len(rows) <= 1 and not "NOTE" in line:
                     columns_content = re.split("[ ]{2,}", line)
-                    if len(columns_content) != number_of_columns:
+
+		    if len(columns_content) == (number_of_columns - 1) and columns_content[0] != "" and "Comment" in fst_columns_content[-1]: # append empty comment line
+			columns_content.append("empty comment")
+
+                    if len(columns_content) != number_of_columns or columns_content[0] == "":
                         columns_content = self.split_row(line, offsets)
                 else:
                     columns_content = self.split_row(line, offsets)

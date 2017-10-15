@@ -1,0 +1,205 @@
+diff --git a/simulator/TcpServer.c b/simulator/TcpServer.c
+index 901a161..4e3530f 100644
+--- a/simulator/TcpServer.c
++++ b/simulator/TcpServer.c
+@@ -38,11 +38,14 @@
+ 
+ #include "TpmBuildSwitches.h"
+ #include <stdio.h>
+-#ifdef _MSC_VER
++#if defined(_Win32) || defined(WIN32)
+ #include <windows.h>
+ #include <winsock.h>
+ #else
+-typedef SOCKET int
++typedef union {   int i;   void* p; } INT_PTR;
++#include <netinet/in.h>
++#include <pthread.h>
++#define closesocket(x) close(x)
+ #endif
+ #include <string.h>
+ #include <stdlib.h>
+@@ -75,41 +78,73 @@ CreateSocket(
+     SOCKET *listenSocket
+ )
+ {
++#if defined(_Win32) || defined(WIN32)
+     WSADATA wsaData;
++#endif
+     struct sockaddr_in MyAddress;
+     int res;
+     // Initialize Winsock
++#if defined(_Win32) || defined(WIN32)
+     res = WSAStartup(MAKEWORD(2, 2), &wsaData);
+     if(res != 0)
+     {
+         printf("WSAStartup failed with error: %d\n", res);
+         return -1;
+     }
++#endif
+     // create listening socket
+     *listenSocket = socket(PF_INET, SOCK_STREAM, 0);
++#if defined(_Win32) || defined(WIN32)
+     if(INVALID_SOCKET == *listenSocket)
+     {
+         printf("Cannot create server listen socket. Error is 0x%x\n",
+                WSAGetLastError());
+         return -1;
+     }
++#else
++    if (*listenSocket < 0)
++    {
++	printf("Cannot create server listen socket. \n");
++	return -1;
++    }
++#endif
+     // bind the listening socket to the specified port
++#if defined(_Win32) || defined(WIN32)
+     ZeroMemory(&MyAddress, sizeof(MyAddress));
++#else
++    bzero((char *) &MyAddress, sizeof(MyAddress));
++#endif
+     MyAddress.sin_port = htons((short)PortNumber);
+     MyAddress.sin_family = AF_INET;
+     res = bind(*listenSocket, (struct sockaddr*) &MyAddress, sizeof(MyAddress));
++#if defined(_Win32) || defined(WIN32)
+     if(res == SOCKET_ERROR)
+     {
+         printf("Bind error. Error is 0x%x\n", WSAGetLastError());
+         return -1;
+     };
++#else
++    if (res)
++    {
++	printf("Bind error. \n");
++	return -1;
++    }
++#endif
+     // listen/wait for server connections
+     res = listen(*listenSocket, 3);
++#if defined(_Win32) || defined(WIN32)
+     if(res == SOCKET_ERROR)
+     {
+         printf("Listen error. Error is 0x%x\n", WSAGetLastError());
+         return -1;
+     };
++#else
++    if (res)
++    {
++	printf("Listen error. \n");
++	return -1;
++    }
++#endif
+     return 0;
+ }
+ 
+@@ -201,7 +236,11 @@ PlatformSvcRoutine(
+     LPVOID port
+ )
+ {
+-    int PortNumber = (int)(INT_PTR)port;
++#if defined(_Win32) || defined(WIN32)
++    int                  PortNumber = (int)(INT_PTR) port;
++#else
++    int                  PortNumber = (int)(((INT_PTR) port).i);
++#endif
+     SOCKET listenSocket, serverSocket;
+     struct sockaddr_in HerAddress;
+     int res;
+@@ -224,11 +263,19 @@ PlatformSvcRoutine(
+         serverSocket = accept(listenSocket,
+                               (struct sockaddr*) &HerAddress,
+                               &length);
++#if defined(_Win32) || defined(WIN32)
+         if(serverSocket == SOCKET_ERROR)
+         {
+             printf("Accept error. Error is 0x%x\n", WSAGetLastError());
+             return -1;
+         };
++#else
++	if (serverSocket < 0)
++	{
++	   printf("Accept error. \n");
++	   return -1;
++	}
++#endif
+         printf("Client accepted\n");
+         // normal behavior on client disconnection is to wait for a new client
+         // to connect
+@@ -249,6 +296,7 @@ PlatformSignalService(
+     int ThreadId;
+     int port = PortNumber;
+     // Create service thread for platform signals
++#if defined(_Win32) || defined(WIN32)
+     hPlatformSvc = CreateThread(NULL, 0,
+                                 (LPTHREAD_START_ROUTINE)PlatformSvcRoutine,
+                                 (LPVOID)(INT_PTR)port, 0, (LPDWORD)&ThreadId);
+@@ -257,6 +305,15 @@ PlatformSignalService(
+         printf("Thread Creation failed\n");
+         return -1;
+     }
++#else
++       pthread_t thread;
++    hPlatformSvc = pthread_create(  &thread, NULL, (void*) PlatformSvcRoutine, (LPVOID) ((INT_PTR) port).p);
++    if(hPlatformSvc)
++    {
++       printf("Thread Creation failed\n");
++       return -1;
++    }
++#endif
+     return 0;
+ }
+ 
+@@ -288,11 +345,19 @@ RegularCommandService(
+         serverSocket = accept(listenSocket,
+                               (struct sockaddr*) &HerAddress,
+                               &length);
++#if defined(_Win32) || defined(WIN32)
+         if(serverSocket == SOCKET_ERROR)
+         {
+             printf("Accept error. Error is 0x%x\n", WSAGetLastError());
+             return -1;
+         };
++#else
++	if (serverSocket < 0)
++	{
++	    printf("Accept error. \n");
++	    return -1;
++	}
++#endif
+         printf("Client accepted\n");
+         // normal behavior on client disconnection is to wait for a new client
+         // to connect
+@@ -342,7 +407,11 @@ ReadBytes(
+         res = recv(s, buffer + numGot, NumBytes - numGot, 0);
+         if(res == -1)
+         {
++#if defined(_Win32) || defined(WIN32)
+             printf("Receive error. Error is 0x%x\n", WSAGetLastError());
++#else
++	    printf("Receive error. \n");
++#endif
+             return FALSE;
+         }
+         if(res == 0)
+@@ -369,6 +438,7 @@ WriteBytes(
+         res = send(s, buffer + numSent, NumBytes - numSent, 0);
+         if(res == -1)
+         {
++#if defined(_Win32) || defined(WIN32)
+             if(WSAGetLastError() == 0x2745)
+             {
+                 printf("Client disconnected\n");
+@@ -377,6 +447,9 @@ WriteBytes(
+             {
+                 printf("Send error. Error is 0x%x\n", WSAGetLastError());
+             }
++#else
++	    printf("Send error. \n");
++#endif
+             return FALSE;
+         }
+         numSent += res;
+-- 
+2.1.4
+

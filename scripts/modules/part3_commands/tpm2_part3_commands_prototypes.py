@@ -147,6 +147,9 @@ class CommandPrototypeFile(PrototypeFile):
             if not isinstance(element, data_structures.TPM2_Partx_CodeLine):
                 continue
 
+	    if settings.SPEC_VERSION_INT == 138 and "TPM2_Import" in element.string:
+		element.string = element.string.strip()
+
             # add prototype line as long as line is part of the function signature
             if not element.string.startswith(" ") and element.string.endswith("(") \
                     and not text_p_prev.startswith("static"):

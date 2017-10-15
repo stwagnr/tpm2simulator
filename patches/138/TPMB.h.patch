@@ -1,0 +1,14 @@
+diff --git a/tpm/include/TPMB.h b/tpm/include/TPMB.h
+index 9e0a6b9..ed99150 100644
+--- a/tpm/include/TPMB.h
++++ b/tpm/include/TPMB.h
+@@ -43,5 +43,2 @@
+-typedef struct {
+-    UINT16 size;
+-    BYTE buffer[1];
+-} TPM2B, *P2B;
++typedef TPM2B *P2B;
+ typedef const TPM2B *PC2B;
+-- 
+2.1.4
+

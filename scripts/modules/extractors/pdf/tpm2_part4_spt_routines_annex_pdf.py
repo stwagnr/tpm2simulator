@@ -27,9 +27,9 @@ class SptRoutinesAnnexPDF(ExtractionNavigator):
             else:
                 break
 
-            if function.strip() == "Alternative RSA Key Generation":
+            if function.strip() == "Alternative RSA Key Generation" or function.strip() == "Header Files" or function.strip() == "Source Files":
                 print " "*8 + ". " + function.strip()
-                sub_sub_sub_section_number = 2  # skip introduction
+                sub_sub_sub_section_number = 1  # skip introduction
                 while True:
                     # find first function entry
                     regex = "\n[ ]*" + section_number + "\." + str(sub_section_number) + "\." + str(sub_sub_section_number) + "\." + str(sub_sub_sub_section_number) + ".[ ]+([^.\d]*?(\.c|\.h|\n))"
@@ -37,7 +37,7 @@ class SptRoutinesAnnexPDF(ExtractionNavigator):
                     if result:
                         function = result.group(1)
                     else:
-                        return
+                        break
 
                     print " "*12 + ". " + function.strip()
 
@@ -142,7 +142,11 @@ class SptRoutinesAnnexPDF(ExtractionNavigator):
 
             result2 = re.search("^[ ]{2,}(.*)", line)
             if not (table_found or code_found) and result2:
+		code_blocks.append(data_structures.TPM2_Partx_CommentLine(""))
                 code_blocks.append(data_structures.TPM2_Partx_CommentLine(result2.group(1)))
+
+	    # reset code status for comments
+	    code_found = False
 
             if not (result1 or result2):
                 break
@@ -167,7 +171,8 @@ class SptRoutinesAnnexPDF(ExtractionNavigator):
             function = result.group(1)
             file.seek(result.end())
 
-        while not (function.strip().endswith(".c") or function.strip().endswith(".h") or "RSA Files" in function or "Elliptic Curve Files" in function):
+        while not (function.strip().endswith(".c") or function.strip().endswith(".h") or "RSA Files" in function or "Elliptic Curve Files" in function
+                   or "OpenSSL-Specific Files" in function):
             sub_section_number += 1
             result = re.search("\n[ ]*" + section_number + "\." + str(sub_section_number) + "[ ]+(.*?[^.\d]{2,})\n", file)
             if result:
@@ -191,7 +196,7 @@ class SptRoutinesAnnexPDF(ExtractionNavigator):
 
             print "    * " + function.strip()
 
-            if "RSA Files" in function or "Elliptic Curve Files" in function:
+            if "RSA Files" in function or "Elliptic Curve Files" in function or "OpenSSL-Specific Files" in function:
                 self.handle_RSA_ECC(file, sub_path, section_number, sub_section_number)
 
             else:

@@ -1,0 +1,19 @@
+diff --git a/simulator/include/TpmTcpProtocol.h b/simulator/include/TpmTcpProtocol.h
+index 03a2382..7691702 100644
+--- a/simulator/include/TpmTcpProtocol.h
++++ b/simulator/include/TpmTcpProtocol.h
+@@ -85,11 +85,5 @@ typedef struct out_buffer
+     uint32_t BufferSize;
+     _OUTPUT_BUFFER Buffer;
+ } _OUT_BUFFER;
+-#ifndef WIN32
+-typedef unsigned long DWORD;
+-typedef void *LPVOID;
+-#undef WINAPI
+-typedef
+-#endif
+ #endif
+ 
+-- 
+2.1.4
+

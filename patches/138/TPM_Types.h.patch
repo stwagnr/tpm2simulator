@@ -1,0 +1,33 @@
+diff --git a/tpm/include/TPM_Types.h b/tpm/include/TPM_Types.h
+index 51fd892..13245d8 100644
+--- a/tpm/include/TPM_Types.h
++++ b/tpm/include/TPM_Types.h
+@@ -40,6 +40,16 @@
+ #include "BaseTypes.h"       // i.a. needed for UINT32
+ #include "Implementation.h"  // i.a. needed for TPM_ALG_ID
+ #include "Capabilities.h"    // i.a. needed for MAX_CAP_CC
++#include "GpMacros.h"
++
++#if !defined(_Win32) && !defined(WIN32)
++#define WINAPI
++#define SOCKET int
++#define HANDLE UINT32
++#define DWORD unsigned long
++#endif
++
++typedef void *LPVOID;
+ 
+ // Table 2:3 - Definition of Base Types (TypedefTable)
+ 
+@@ -512,7 +522,7 @@ typedef union {
+         unsigned Reserved_from_12 : 4;
+         unsigned restricted : 1;
+         unsigned decrypt : 1;
+-        unsigned sign / encrypt : 1;
++        unsigned encrypt : 1;
+         unsigned Reserved_from_19 : 13;
+     };
+     UINT32 val;
+-- 
+2.1.4
+
